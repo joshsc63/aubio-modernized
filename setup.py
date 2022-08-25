@@ -19,6 +19,7 @@ include_dirs = []
 library_dirs = []
 define_macros = [('AUBIO_VERSION', '%s' % __aubio_version__)]
 extra_link_args = []
+extra_compile_args = []
 
 include_dirs += ['python/ext']
 try:
@@ -30,6 +31,9 @@ except ImportError:
 if sys.platform.startswith('darwin'):
     extra_link_args += ['-framework', 'CoreFoundation',
             '-framework', 'AudioToolbox']
+
+if sys.platform == 'win32':
+    extra_compile_args += [ '/utf-8' ]
 
 sources = sorted(glob.glob(os.path.join('python', 'ext', '*.c')))
 
