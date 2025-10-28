@@ -33,11 +33,19 @@ if sys.platform.startswith('darwin'):
 
 sources = sorted(glob.glob(os.path.join('python', 'ext', '*.c')))
 
+# Conditional compile args for GCC/Clang (not MSVC)
+extra_compile_args = []
+if not sys.platform.startswith('win'):
+    # GCC 14 treats -Wincompatible-pointer-types as error
+    # This suppresses false positive for NumPy 1.19+ const qualifiers
+    extra_compile_args = ['-Wno-incompatible-pointer-types']
+
 aubio_extension = Extension("aubio._aubio",
     sources,
     include_dirs = include_dirs,
     library_dirs = library_dirs,
     extra_link_args = extra_link_args,
+    extra_compile_args = extra_compile_args,
     define_macros = define_macros)
 
 # TODO: find a way to track if package is built against libaubio
