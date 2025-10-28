@@ -66,6 +66,9 @@
 
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(56, 56, 0)
 #define AUBIO_AVCODEC_MAX_BUFFER_SIZE FF_MIN_BUFFER_SIZE
+#elif LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100)
+// FFmpeg 7.0+ removed AV_INPUT_BUFFER_MIN_SIZE, use fallback
+#define AUBIO_AVCODEC_MAX_BUFFER_SIZE 16384
 #else
 #define AUBIO_AVCODEC_MAX_BUFFER_SIZE AV_INPUT_BUFFER_MIN_SIZE
 #endif
@@ -622,7 +625,7 @@ uint_t aubio_source_avcodec_seek (aubio_source_avcodec_t * s, uint_t pos) {
 }
 
 uint_t aubio_source_avcodec_get_duration (aubio_source_avcodec_t * s) {
-  if (s && &(s->avFormatCtx) != NULL) {
+  if (s && s->avFormatCtx != NULL) {
     int64_t duration = s->avFormatCtx->duration;
     return s->samplerate * ((uint_t)duration / 1e6 );
   }
